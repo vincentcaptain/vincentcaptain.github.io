@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Shujia Liang</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #333;
+      background: #fff;
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+
+    a { color: #1772d0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .back-link {
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .post-title {
+      font-size: 26px;
+      font-weight: normal;
+      margin-bottom: 6px;
+    }
+
+    .post-date {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    /* ── Markdown content styles ── */
+    .post-content h1 { font-size: 24px; font-weight: normal; margin: 28px 0 12px; border-bottom: 1px solid #ccc; padding-bottom: 6px; }
+    .post-content h2 { font-size: 20px; font-weight: normal; margin: 24px 0 10px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .post-content h3 { font-size: 17px; font-weight: bold; margin: 20px 0 8px; }
+    .post-content p { font-size: 15px; margin-bottom: 14px; }
+    .post-content ul, .post-content ol { font-size: 15px; margin: 0 0 14px 24px; }
+    .post-content li { margin-bottom: 4px; }
+    .post-content blockquote { border-left: 3px solid #ccc; padding-left: 16px; color: #666; margin: 14px 0; font-style: italic; }
+    .post-content code { font-family: 'Menlo', 'Consolas', monospace; font-size: 13px; background: #f5f5f5; padding: 2px 5px; border-radius: 3px; }
+    .post-content pre { background: #f5f5f5; padding: 14px; border-radius: 4px; overflow-x: auto; margin: 14px 0; }
+    .post-content pre code { background: none; padding: 0; }
+    .post-content img { max-width: 100%; height: auto; border-radius: 4px; margin: 14px 0; }
+    .post-content hr { border: none; border-top: 1px solid #ddd; margin: 24px 0; }
+    .post-content table { border-collapse: collapse; margin: 14px 0; width: 100%; }
+    .post-content th, .post-content td { border: 1px solid #ddd; padding: 8px 12px; font-size: 14px; text-align: left; }
+    .post-content th { background: #f9f9f9; }
+
+    .error { color: #c00; font-size: 15px; margin-top: 20px; }
+
+    .footer {
+      margin-top: 50px;
+      padding-top: 16px;
+      border-top: 1px solid #ddd;
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <div id="post-header"></div>
+    <div class="post-content" id="post-content"></div>
+    <div class="footer">
+      &copy; 2026 Shujia Liang. <a href="index.html">Home</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const post = params.get('post');
+
+    if (!post || !/^[a-zA-Z0-9_-]+$/.test(post)) {
+      document.getElementById('post-content').innerHTML = '<p class="error">No post specified. <a href="index.html">Go home</a>.</p>';
+    } else {
+      fetch('blog/' + post + '.md')
+        .then(function(res) {
+          if (!res.ok) throw new Error('Post not found');
+          return res.text();
+        })
+        .then(function(md) {
+          document.getElementById('post-content').innerHTML = marked.parse(md);
+          // Use first h1 as page title if present
+          var h1 = document.querySelector('.post-content h1');
+          if (h1) {
+            document.title = h1.textContent + ' — Shujia Liang';
+          }
+        })
+        .catch(function() {
+          document.getElementById('post-content').innerHTML = '<p class="error">Post not found. <a href="index.html">Go home</a>.</p>';
+        });
+    }
+  </script>
+</body>
+</html>
